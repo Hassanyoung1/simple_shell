@@ -82,9 +82,14 @@ void free_vector(char **argv)
 {
 	int i;
 
+	/*New Addition:*/
+	if (argv == NULL)
+		return;
+
 	for (i = 0; argv[i] != NULL; i++)
 	{
-		free(argv[i]);
+		if (argv[i] != NULL)
+			free(argv[i]);
 	}
 	free(argv);
 }
