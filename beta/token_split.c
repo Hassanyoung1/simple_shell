@@ -12,6 +12,10 @@ char **token_split(char *path, char *delim)
 {
 	char **argv, *holder, *token;
 	int count = 0, i = 0;
+	int my_acces = access(holder, X_OK);
+	int my_acces = access(holder, F_OK);
+	int my_acces = access(holder, W_OK);
+	int my_acces = access(holder, R_OK);
 
 	if (path == NULL)
 		return (NULL);
@@ -27,7 +31,35 @@ char **token_split(char *path, char *delim)
 		token = strtok(NULL, delim);
 	}
 	free(holder);
+	  if (my_access(holder, F_OK) == 0) {
+        printf("File '%s' exists\n", holder);
+    } else {
+        printf("File '%s' does not exist\n", holder);
+    }
 
+    // Check if the file is readable
+    if (my_access(holder, R_OK) == 0) {
+        printf("File '%s' is readable\n", holder);
+    } else {
+        printf("File '%s' is not readable\n", holder);
+    }
+
+    // Check if the file is writable
+    if (my_access(holder, W_OK) == 0) {
+        printf("File '%s' is writable\n", holder);
+    } else {
+        printf("File '%s' is not writable\n", holder);
+    }
+
+    // Check if the file is executable
+    if (my_access(holder, X_OK) == 0) {
+        printf("File '%s' is executable\n", holder);
+    } else {
+        printf("File '%s' is not executable\n", holder);
+    }
+
+    return 0;
+}
 	argv = malloc(sizeof(char *) * (count + 1));
 
 	for (token = strtok(path, delim); token != NULL; token = strtok(NULL, delim))

@@ -18,7 +18,7 @@ int stringcmp(char *s1, char *s2);
 /*void fork_check(int pid);*/
 void fork_check(char **argv, char **envp, int pid);
 char *_strdup(char *str);
-
+int my_access(const char* path, int mode);
 
 
 /*MAIN FUNCTIONS*/

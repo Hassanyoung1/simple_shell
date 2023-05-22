@@ -89,3 +89,13 @@ char *call_getline(char *str, size_t n)
 
 	return (str);
 }
+
+int my_access(const char* path, int mode) {
+    if (access(path, mode) == 0) {
+        // The file has the specified permissions
+        return 0;
+    } else {
+        // The file does not have the specified permissions or does not exist
+        return -1;
+    }
+}
