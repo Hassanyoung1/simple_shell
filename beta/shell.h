@@ -16,10 +16,15 @@ int _strlen(char *str);
 char *call_getline(char *str, size_t n);
 int stringcmp(char *s1, char *s2);
 /*void fork_check(int pid);*/
-void fork_check(char **argv, char **envp, int pid);
+void fork_check(char **argv, char **envp, pid_t pid);
 char *_strdup(char *str);
+char *_strcat(char *dest, char *src);
+char *path_get(char *command);
+char *path_get_new(char *command);
+bool check_builtin(char *str);
 
-
+/* EXTERNS*/
+extern char **environ;
 
 /*MAIN FUNCTIONS*/
 char **token_split(char *path, char *delim);
