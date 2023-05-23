@@ -128,7 +128,7 @@ char *path_get(char *command)
 
 	if (access(command, X_OK) == 0)
 		return (command);
-	path  = getenv("PATH");
+	path  = _getenv("PATH");
 	if (path == NULL)
 		return (NULL);
 	path_copy = strdup(path);
