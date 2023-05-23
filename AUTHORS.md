@@ -1,4 +1,4 @@
-PROJECT AUTHORS:
+#PROJECT AUTHORS:
 
-1: Abubakar Sani
-2: Hassan Olaoluwa Hakeem
+- Abubakar Sani
+- Hassan Olaoluwa Hakeem
