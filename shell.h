@@ -15,6 +15,7 @@ void free_vector(char **argv);
 int _strlen(char *str);
 char *call_getline(char *str, size_t n);
 int stringcmp(char *s1, char *s2);
+char *_strcpy(char *dest, char *src);
 /*void fork_check(int pid);*/
 void fork_check(char **argv, char **envp, pid_t pid);
 char *_strdup(char *str);
@@ -22,7 +23,8 @@ char *_strcat(char *dest, char *src);
 char *path_get(char *command);
 char *path_get_new(char *command);
 bool check_builtin(char *str);
-char *_getenv(const char *name);  
+
+char *_getenv(const char *name);
 /* EXTERNS*/
 extern char **environ;
 

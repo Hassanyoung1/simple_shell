@@ -93,11 +93,9 @@ char *call_getline(char *str, size_t n)
 {
 	if (getline(&str, &n, stdin) == -1)
 	{
-		if (feof(stdin))
+		if (!isatty(STDIN_FILENO))
 		{
-			/*perror("end of file");*/
 			free(str);
-			/*changed from exit 98*/
 			exit(EXIT_SUCCESS);
 		}
 		else
@@ -128,28 +126,26 @@ char *path_get(char *command)
 
 	if (access(command, X_OK) == 0)
 		return (command);
+
 	path  = _getenv("PATH");
 	if (path == NULL)
 		return (NULL);
-	path_copy = strdup(path);
+	path_copy = _strdup(path);
 	if (path_copy == NULL)
 		return (NULL);
 
-	/*Added path check*/
-	/*printf("path is: %s\n", path_copy);*/
 	path_holder = token_split(path_copy, ":");
 
 	while (path_holder[i] != NULL)
 	{
-		strcpy(exec_path, path_holder[i]);
+		_strcpy(exec_path, path_holder[i]);
 		_strcat(exec_path, "/");
 		_strcat(exec_path, command);
 		_strcat(exec_path, "\0");
 
 		if (access(exec_path, X_OK) == 0)
 		{
-			holder = strdup(exec_path);
-			/*printf("concatenated str is: %s\n", holder);*/
+			holder = _strdup(exec_path);
 			return (holder);
 		}
 		i++;
