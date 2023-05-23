@@ -116,7 +116,7 @@ char *call_getline(char *str, size_t n)
 
 	return (str);
 }
-/*<<<<<<< HEAD*/
+<<<<<<< HEAD
 
 int my_access(const char* path, int mode) {
     if (access(path, mode) == 0) {
@@ -126,7 +126,7 @@ int my_access(const char* path, int mode) {
         // The file does not have the specified permissions or does not exist
         return -1;
     }
-/*=======*/
+=======
 /**
  * path_get -  concatinate command with path
  * @command: commmand pass by user
@@ -202,5 +202,5 @@ bool check_builtin(char *str)
 		return (true);
 	}
 	return (false);
-/*>>>>>>> 21b54c3f91eaa690b5d124fd517103f672d56102*/
+>>>>>>> 21b54c3f91eaa690b5d124fd517103f672d56102
 }

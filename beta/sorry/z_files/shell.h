@@ -18,9 +18,10 @@ int stringcmp(char *s1, char *s2);
 /*void fork_check(int pid);*/
 void fork_check(char **argv, char **envp, pid_t pid);
 char *_strdup(char *str);
-/*<<<<<<< HEAD*/
+<<<<<<< HEAD
 int my_access(const char* path, int mode);
 
+=======
 char *_strcat(char *dest, char *src);
 char *path_get(char *command);
 char *path_get_new(char *command);

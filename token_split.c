@@ -13,9 +13,12 @@ char **token_split(char *path, char *delim)
 	char **argv, *holder, *token;
 	int count = 0, i = 0;
 
-	holder = strdup(path);
+	if (path == NULL)
+		return (NULL);
+
+	holder = _strdup(path);
 	token = strtok(holder, delim);
-	if (token == NULL)
+	if (token == NULL || holder == NULL)
 		return (NULL);
 
 	while (token != NULL)
@@ -47,9 +50,14 @@ void free_vector(char **argv)
 {
 	int i;
 
+	/*New Addition:*/
+	if (argv == NULL)
+		return;
+
 	for (i = 0; argv[i] != NULL; i++)
 	{
-		free(argv[i]);
+		if (argv[i] != NULL)
+			free(argv[i]);
 	}
 	free(argv);
 }
