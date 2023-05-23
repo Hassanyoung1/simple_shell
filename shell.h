@@ -23,6 +23,8 @@ char *_strcat(char *dest, char *src);
 char *path_get(char *command);
 char *path_get_new(char *command);
 bool check_builtin(char *str);
+char *_getenv(char *path);
+char *_getenv_new(char *path);
 
 /* EXTERNS*/
 extern char **environ;

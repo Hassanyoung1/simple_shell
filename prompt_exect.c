@@ -93,11 +93,9 @@ char *call_getline(char *str, size_t n)
 {
 	if (getline(&str, &n, stdin) == -1)
 	{
-		if (feof(stdin))
+		if (!isatty(STDIN_FILENO))
 		{
-			/*perror("end of file");*/
 			free(str);
-			/*changed from exit 98*/
 			exit(EXIT_SUCCESS);
 		}
 		else
@@ -128,7 +126,7 @@ char *path_get(char *command)
 
 	if (access(command, X_OK) == 0)
 		return (command);
-	path  = getenv("PATH");
+	path  = _getenv_new("PATH");
 	if (path == NULL)
 		return (NULL);
 	path_copy = _strdup(path);
