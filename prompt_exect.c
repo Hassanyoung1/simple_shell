@@ -142,9 +142,9 @@ char *path_get(char *command)
 	while (path_holder[i] != NULL)
 	{
 		strcpy(exec_path, path_holder[i]);
-		strcat(exec_path, "/");
-		strcat(exec_path, command);
-		strcat(exec_path, "\0");
+		_strcat(exec_path, "/");
+		_strcat(exec_path, command);
+		_strcat(exec_path, "\0");
 
 		if (access(exec_path, X_OK) == 0)
 		{
