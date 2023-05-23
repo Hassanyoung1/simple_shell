@@ -19,12 +19,8 @@ void prompt_exect(char **argv, char **envp)
 			write(1, "$ ", 2);
 
 		str = call_getline(str, n);
-		/*if (stringcmp(str, "exit") == 0)
-		 *	break;*/
 		if (*str == '\n')
 			continue;
-		/*else if (check_builtin(str))
-		 *	continue;*/
 
 		argv = token_split(str, " ");
 		if (argv == NULL)
@@ -158,8 +154,6 @@ char *path_get(char *command)
 		}
 		i++;
 	}
-	/*if (path_holder != NULL || *path_holder != NULL)
-	 *	free_vector(path_holder);*/
 	return (NULL);
 }
 

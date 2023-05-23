@@ -8,7 +8,7 @@
  * @envp: the environment path
  * Return: nothing
  */
-extern char **environ;
+/*extern char **environ;*/
 
 int main(int argc, char **argv, char **envp)
 {
@@ -16,5 +16,7 @@ int main(int argc, char **argv, char **envp)
 	{
 		prompt_exect(argv, envp);
 	}
+	perror(": syntax error");
+	exit(EXIT_FAILURE);
 	return (0);
 }
