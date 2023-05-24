@@ -65,14 +65,14 @@ char *_strchr(char *s, char c)
 
 int _strncmp(char *str1, char *str2, int n)
 {
-    int i;
+	int i;
 
-    for (i = 0; (str1[i] != '\0' || str2[i] != '\0') && i < n; i++)
-    {
-        if (str1[i] != str2[i])
-            return (str1[i] - str2[i]);
-    }
+	for (i = 0; (str1[i] != '\0' || str2[i] != '\0') && i < n; i++)
+	{
+		if (str1[i] != str2[i])
+			return (str1[i] - str2[i]);
+	}
 
-    return (0);
+	return (0);
 }
 
