@@ -93,21 +93,32 @@ char *call_getline(char *str, size_t n)
 {
 	if (getline(&str, &n, stdin) == -1)
 	{
-		if (!isatty(STDIN_FILENO))
-		{
-			free(str);
-			exit(EXIT_SUCCESS);
-		}
-		else
-		{
-			perror("getline error");
-			free(str);
-			exit(EXIT_FAILURE);
-		}
+		/*
+		 * if (!isatty(STDIN_FILENO))
+		  *{
+		 */
+		free(str);
+		write(1, "\n", 1);
+		check_builtin("exit");
+		/*exit(EXIT_SUCCESS);*/
+		/*
+		 *}
+		 *else
+		 *{
+		 */
+		/*perror("getline error");*/
+		/*
+		 * free(str);
+		 * exit(EXIT_SUCCESS);
+		 */
+		/*}*/
 	}
 	/*new addition: checks if getline got only newline*/
 	else if (*str == '\n')
+	{
+		free(str);
 		return ("\n");
+	}
 	str[_strlen(str) - 1] = '\0';
 
 	return (str);
