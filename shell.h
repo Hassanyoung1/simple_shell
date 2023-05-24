@@ -28,6 +28,7 @@ char *_strcat(char *dest, char *src);
 char *path_get(char *command);
 char *path_get_new(char *command);
 bool check_builtin(char *str);
+void error_handle(char *curr_name, char *argv_name, int count);
 
 char *_getenv(char *name);
 /* EXTERNS*/

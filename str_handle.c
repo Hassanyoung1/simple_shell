@@ -36,3 +36,4 @@ int str_check(char *str)
 
 	return (-1);
 }
+

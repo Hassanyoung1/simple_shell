@@ -9,7 +9,7 @@
  */
 void prompt_exect(char **argv, char **envp)
 {
-	char *holder, *str = NULL;
+	char *holder, *str = NULL, *argv_name = argv[0];
 	size_t n  = 0;
 	pid_t a;
 
@@ -17,7 +17,6 @@ void prompt_exect(char **argv, char **envp)
 	{
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
-
 		str = call_getline(str, n);
 		if (*str == '\n')
 			continue;
@@ -41,11 +40,14 @@ void prompt_exect(char **argv, char **envp)
 			fork_check(argv, envp, a);
 		}
 		if (argv == NULL || holder == NULL)
+		{
+			write(STDERR_FILENO, argv_name, _strlen(argv_name));
+			write(STDERR_FILENO, ": ", 2);
 			perror(argv[0]);
+		}
 		free(str);
 		str = NULL;
 	}
-	/*free_vector(argv);*/
 	free(str);
 }
 /**
@@ -63,12 +65,12 @@ void fork_check(char **argv, char **envp, int pid)
 	{
 		execve(argv[0], argv, envp);
 		perror(argv[0]);
-		free_vector(argv);
+		/*free_vector(argv);*/
 		exit(EXIT_FAILURE);
 	}
 	else if (pid == -1)
 	{	perror("fork error");
-		free_vector(argv);
+		/*free_vector(argv);*/
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -76,7 +78,7 @@ void fork_check(char **argv, char **envp, int pid)
 		if (wait(NULL) == -1)
 		{
 			perror("wait error");
-			free_vector(argv);
+			/*free_vector(argv);*/
 			exit(EXIT_FAILURE);
 		}
 	}
