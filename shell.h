@@ -18,6 +18,7 @@ int stringcmp(char *s1, char *s2);
 char *_strcpy(char *dest, char *src);
 char *_strchr(char *s, char c);
 int _strncmp(char *str1, char *str2, int n);
+int str_check(char *str);
 
 
 /*void fork_check(int pid);*/

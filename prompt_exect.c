@@ -93,31 +93,20 @@ char *call_getline(char *str, size_t n)
 {
 	if (getline(&str, &n, stdin) == -1)
 	{
-		/*
-		 * if (!isatty(STDIN_FILENO))
-		  *{
-		 */
 		free(str);
-		write(1, "\n", 1);
-		check_builtin("exit");
-		/*exit(EXIT_SUCCESS);*/
-		/*
-		 *}
-		 *else
-		 *{
-		 */
-		/*perror("getline error");*/
-		/*
-		 * free(str);
-		 * exit(EXIT_SUCCESS);
-		 */
-		/*}*/
+		if (isatty(STDIN_FILENO && str == NULL))
+		{
+			write(1, "\n", 1);
+			exit(EXIT_SUCCESS);
+		}
+
+		exit(EXIT_SUCCESS);
 	}
-	/*new addition: checks if getline got only newline*/
-	else if (*str == '\n')
+
+	else if (str_check(str) == 0 && !isatty(STDIN_FILENO))
 	{
 		free(str);
-		return ("\n");
+		exit(EXIT_SUCCESS);
 	}
 	str[_strlen(str) - 1] = '\0';
 
