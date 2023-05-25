@@ -93,6 +93,7 @@ void fork_check(char **argv, char **envp, int pid)
  */
 char *call_getline(char *str, size_t n)
 {
+	signal(SIGINT, handle_sigs);
 	if (getline(&str, &n, stdin) == -1)
 	{
 		free(str);

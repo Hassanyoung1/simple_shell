@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 /**HELPER FUNCTIONS*/
 void free_vector(char **argv);
@@ -29,6 +30,8 @@ char *path_get(char *command);
 char *path_get_new(char *command);
 bool check_builtin(char *str);
 void error_handle(char *curr_name, char *argv_name, int count);
+void handle_sigs(int sig_num);
+
 
 char *_getenv(char *name);
 /* EXTERNS*/

@@ -13,6 +13,7 @@ int main(int argc, char **argv, char **envp)
 {
 	if (argc == 1)
 	{
+		signal(SIGINT, handle_sigs);
 		prompt_exect(argv, envp);
 	}
 	perror(": syntax error");
