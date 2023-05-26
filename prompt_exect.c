@@ -1,5 +1,7 @@
 #include "shell.h"
 
+#define MAX_TOKENS 200
+
 /**
  * prompt_exect - provides a prompt and execute simple shell command
  *
@@ -9,31 +11,32 @@
  */
 void prompt_exect(char **argv, char **envp)
 {
-	char *holder, *str = NULL, **token_holder;
+	char *holder, *str = NULL, *token_holder[MAX_TOKENS];
 	size_t n  = 0;
+	int count = 0;
 	pid_t a;
 
 	while (true)
 	{
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
-		str = call_getline(str, n);
+		str = call_getline(str, n, &count);
 
 		if (*str == '\n')
 		{
-			free_vector(NULL, &str);
+			free(str);
 			continue;
 		}
-
-		token_holder = token_split(str, " ");
-		if (token_holder == NULL)
-		{
-			free_vector(&token_holder, &str);
+		token_split(str, " ", token_holder, MAX_TOKENS);
+		if (token_holder[0] == NULL)
+		{free(str);
+			free_token_holder(token_holder);
 			continue;
 		}
 		else if (check_builtin(token_holder[0]))
 		{
-			free_vector(&token_holder, &str);
+			free_token_holder(token_holder);
+			free(str);
 			continue;
 		}
 		holder = path_get(token_holder[0]);
@@ -41,20 +44,11 @@ void prompt_exect(char **argv, char **envp)
 		if (holder != NULL)
 		{
 			token_holder[0] = holder;
-			/*free_vector(NULL, &holder);*/
-
 			a = fork();
 			fork_check(token_holder, envp, a);
 		}
-
 		else if (token_holder == NULL || holder == NULL)
-		{
-			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
-			write(STDERR_FILENO, ": ", 2);
-			perror(token_holder[0]);
-			/*free_vector(&token_holder, &holder);*/
-			free_vector(&argv, NULL);
-		}
+			error_handle(argv, token_holder[0], count);
 		free(str);
 	}
 }
@@ -94,10 +88,13 @@ void fork_check(char **argv, char **envp, int pid)
  *
  * @str: string to hold collected user input
  * @n: size of str
+ * @count: Total number of command entered by user
  * Return: nothing
  */
-char *call_getline(char *str, size_t n)
+char *call_getline(char *str, size_t n, int *count)
 {
+	int check;
+
 	sig_str sig_cont;
 
 	sig_cont.flag = 0;
@@ -105,6 +102,7 @@ char *call_getline(char *str, size_t n)
 
 	if (getline(&str, &n, stdin) == -1)
 	{
+		(*count)++;
 		free(str);
 		if (isatty(STDIN_FILENO && str == NULL))
 		{
@@ -115,33 +113,41 @@ char *call_getline(char *str, size_t n)
 		exit(EXIT_SUCCESS);
 	}
 
-	else if (str_check(str) == 0 && !isatty(STDIN_FILENO))
+	check = str_check(str);
+	if (check == 0 && !isatty(STDIN_FILENO))
 	{
-		free_vector(NULL, &str);
+		(*count)++;
+		free(str);
 		exit(EXIT_SUCCESS);
 	}
-	/*else if (signal(SIGINT, handle_sigs) == SIG_DFL)*/
-	/*{*/
-	/*	free(str);*/
-	/*	return ("\n");*/
-	/*}*/
+	if (check == 0 && isatty(STDIN_FILENO))
+	{
+		printf("right here..");
+		(*count)++;
+		free(str);
+		return ("\n");
+	}
+	(*count)++;
 
 	str[_strlen(str) - 1] = '\0';
 
 	return (str);
 }
+
 /**
  * path_get -  concatinate command with path
  * @command: commmand pass by user
  * Return: success return concatinated path, else Null
  **/
-
 char *path_get(char *command)
 {
-	char **path_holder, *holder, *path_copy, *path;
+	char *path_holder[MAX_TOKENS], *holder, *path_copy, *path;
 	char exec_path[100];
-	int i = 0;
+	int check, i = 0;
 
+	check = str_check(command);
+	if (check == 0 || check == 1 || command == NULL)
+		command[0] = '\0';
 	if (access(command, X_OK) == 0)
 		return (command);
 
@@ -151,11 +157,11 @@ char *path_get(char *command)
 	path_copy = _strdup(path);
 	if (path_copy == NULL)
 	{
-		free_vector(NULL, &path_copy);
+		free(path_copy);
 		return (NULL);
 	}
 
-	path_holder = token_split(path_copy, ":");
+	token_split(path_copy, ":", path_holder, MAX_TOKENS);
 
 	while (path_holder[i] != NULL)
 	{
@@ -167,12 +173,10 @@ char *path_get(char *command)
 		if (access(exec_path, X_OK) == 0)
 		{
 			holder = _strdup(exec_path);
-			/*free_vector(path_holder, NULL);*/
 			return (holder);
 		}
 		i++;
 	}
-	free_vector(&path_holder, &path_copy);
 	return (NULL);
 }
 

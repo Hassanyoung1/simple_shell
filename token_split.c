@@ -5,77 +5,51 @@
  *
  * @path: A string variable to be split
  * @delim: delimeter to be used for spliting
+ * @argv: An array of array of strings
+ * @argv_size: size of argv
  * Return: A pointer to splitted string
  */
-
-char **token_split(char *path, char *delim)
+void token_split(char *path, char *delim, char **argv, int argv_size)
 {
-	char **argv, *holder, *token;
+	char *token;
 	int count = 0, i = 0;
 
-	if (path == NULL)
-		return (NULL);
+	if (path == NULL || argv == NULL || argv_size <= 0)
+		return;
 
-	holder = _strdup(path);
-	token = strtok(holder, delim);
-	if (token == NULL || holder == NULL)
-		return (NULL);
-
-	while (token != NULL)
+	token = strtok(path, delim);
+	while (token != NULL && count < argv_size - 1)
 	{
+		argv[i] = malloc(_strlen(token) + 1);
+		if (argv[i] == NULL)
+		{
+			free_token_holder(argv);
+			perror("memory allocation");
+			return;
+		}
+
+		_strcpy(argv[i], token);
 		count++;
+		i++;
 		token = strtok(NULL, delim);
 	}
-	free(holder);
 
-	argv = malloc(sizeof(char *) * (count + 1));
-	if (argv == NULL)
-		return (NULL);
-
-	for (token = strtok(path, delim); token != NULL; token = strtok(NULL, delim))
-	{
-		argv[i] = token;
-		i++;
-	}
 	argv[i] = NULL;
-
-	return (argv);
 }
 
 /**
- * free_vector - frees string vector and string
+ * free_token_holder - frees alocated memory in token_holder
  *
- * @argv_ptr: A pointer to  string vector to be freed
- * @str_ptr: A pointer to string to be freed
- * Return: Nothing
+ * @token_holder: holder to be freed
+ * REturn: nothing
  */
-
-void free_vector(char ***argv_ptr, char **str_ptr)
+void free_token_holder(char **token_holder)
 {
-	int i;
-	char **argv = *argv_ptr;
-	char *str = *str_ptr;
+	int i = 0;
 
-	if (argv != NULL)
+	while (token_holder[i] != NULL)
 	{
-		for (i = 0; argv[i] != NULL; i++)
-		{
-			if (argv[i] != NULL)
-			{
-				free(argv[i]);
-				argv[i] = NULL;
-			}
-			argv[i] = NULL;
-		}
-
-		free(argv);
-		*argv_ptr = NULL;
+		free(token_holder[i]);
+		i++;
 	}
-
-	if (str != NULL)
-	{
-		free(str);
-		*str_ptr = NULL;
-	}
-	*str_ptr = NULL;
 }

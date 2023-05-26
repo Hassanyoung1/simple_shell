@@ -8,14 +8,17 @@
  * Return: A pointer to splitted string
  */
 
-char **token_split(char *path, char *delim)
+char **token_split_old(char *path, char *delim)
 {
 	char **argv, *holder, *token;
 	int count = 0, i = 0;
 
-	holder = strdup(path);
+	if (path == NULL)
+		return (NULL);
+
+	holder = _strdup(path);
 	token = strtok(holder, delim);
-	if (token == NULL)
+	if (token == NULL || holder == NULL)
 		return (NULL);
 
 	while (token != NULL)
@@ -26,6 +29,8 @@ char **token_split(char *path, char *delim)
 	free(holder);
 
 	argv = malloc(sizeof(char *) * (count + 1));
+	if (argv == NULL)
+		return (NULL);
 
 	for (token = strtok(path, delim); token != NULL; token = strtok(NULL, delim))
 	{
@@ -38,18 +43,37 @@ char **token_split(char *path, char *delim)
 }
 
 /**
- * free_vector - frees a given argumnet vector
+ * free_vector - frees string vector and string
  *
- * @argv: argument vector to be freed
- * Return: nothing
+ * @argv_ptr: A pointer to  string vector to be freed
+ * @str_ptr: A pointer to string to be freed
+ * Return: Nothing
  */
-void free_vector(char **argv)
+
+void free_vector(char ***argv_ptr, char **str_ptr)
 {
 	int i;
+	char **argv = *argv_ptr;
+	char *str = *str_ptr;
 
-	for (i = 0; argv[i] != NULL; i++)
+	if (argv != NULL)
 	{
-		free(argv[i]);
+		for (i = 0; argv[i] != NULL; i++)
+		{
+			if (argv[i] != NULL)
+			{
+				free(argv[i]);
+				argv[i] = NULL;
+			}
+		}
+
+		free(argv);
+		*argv_ptr = NULL;
 	}
-	free(argv);
+
+	if (str != NULL)
+	{
+		free(str);
+		*str_ptr = NULL;
+	}
 }
