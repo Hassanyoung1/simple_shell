@@ -9,7 +9,7 @@
  */
 void prompt_exect(char **argv, char **envp)
 {
-	char *holder, *str = NULL, *argv_name = argv[0];
+	char *holder, *str = NULL, **token_holder;
 	size_t n  = 0;
 	pid_t a;
 
@@ -18,37 +18,45 @@ void prompt_exect(char **argv, char **envp)
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
 		str = call_getline(str, n);
-		if (*str == '\n')
-			continue;
 
-		argv = token_split(str, " ");
-		if (argv == NULL)
+		if (*str == '\n')
 		{
-			free_vector(argv);
+			free_vector(NULL, &str);
 			continue;
 		}
-		else if (check_builtin(argv[0]))
+
+		token_holder = token_split(str, " ");
+		if (token_holder == NULL)
+		{
+			free_vector(&token_holder, &str);
 			continue;
-		holder = path_get(argv[0]);
+		}
+		else if (check_builtin(token_holder[0]))
+		{
+			free_vector(&token_holder, &str);
+			continue;
+		}
+		holder = path_get(token_holder[0]);
 
 		if (holder != NULL)
 		{
-			argv[0] = holder;
+			token_holder[0] = holder;
+			/*free_vector(NULL, &holder);*/
 
 			a = fork();
-
-			fork_check(argv, envp, a);
+			fork_check(token_holder, envp, a);
 		}
-		if (argv == NULL || holder == NULL)
+
+		else if (token_holder == NULL || holder == NULL)
 		{
-			write(STDERR_FILENO, argv_name, _strlen(argv_name));
+			write(STDERR_FILENO, argv[0], _strlen(argv[0]));
 			write(STDERR_FILENO, ": ", 2);
-			perror(argv[0]);
+			perror(token_holder[0]);
+			/*free_vector(&token_holder, &holder);*/
+			free_vector(&argv, NULL);
 		}
 		free(str);
-		str = NULL;
 	}
-	free(str);
 }
 /**
  * fork_check - checks fork status and implements execve
@@ -65,12 +73,10 @@ void fork_check(char **argv, char **envp, int pid)
 	{
 		execve(argv[0], argv, envp);
 		perror(argv[0]);
-		/*free_vector(argv);*/
 		exit(EXIT_FAILURE);
 	}
 	else if (pid == -1)
 	{	perror("fork error");
-		/*free_vector(argv);*/
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -78,7 +84,6 @@ void fork_check(char **argv, char **envp, int pid)
 		if (wait(NULL) == -1)
 		{
 			perror("wait error");
-			/*free_vector(argv);*/
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -93,7 +98,11 @@ void fork_check(char **argv, char **envp, int pid)
  */
 char *call_getline(char *str, size_t n)
 {
-	signal(SIGINT, handle_sigs);
+	sig_str sig_cont;
+
+	sig_cont.flag = 0;
+	init_handle_sigs(&sig_cont);
+
 	if (getline(&str, &n, stdin) == -1)
 	{
 		free(str);
@@ -108,9 +117,15 @@ char *call_getline(char *str, size_t n)
 
 	else if (str_check(str) == 0 && !isatty(STDIN_FILENO))
 	{
-		free(str);
+		free_vector(NULL, &str);
 		exit(EXIT_SUCCESS);
 	}
+	/*else if (signal(SIGINT, handle_sigs) == SIG_DFL)*/
+	/*{*/
+	/*	free(str);*/
+	/*	return ("\n");*/
+	/*}*/
+
 	str[_strlen(str) - 1] = '\0';
 
 	return (str);
@@ -135,7 +150,10 @@ char *path_get(char *command)
 		return (NULL);
 	path_copy = _strdup(path);
 	if (path_copy == NULL)
+	{
+		free_vector(NULL, &path_copy);
 		return (NULL);
+	}
 
 	path_holder = token_split(path_copy, ":");
 
@@ -149,10 +167,12 @@ char *path_get(char *command)
 		if (access(exec_path, X_OK) == 0)
 		{
 			holder = _strdup(exec_path);
+			/*free_vector(path_holder, NULL);*/
 			return (holder);
 		}
 		i++;
 	}
+	free_vector(&path_holder, &path_copy);
 	return (NULL);
 }
 

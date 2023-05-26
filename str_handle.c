@@ -35,20 +35,3 @@ int str_check(char *str)
 
 	return (-1);
 }
-
-/**
- * handle_sigs - handles signals
- *
- * @sig_num: signal number
- * Return: nothing
- */
-
-
-void handle_sigs(int sig_num)
-{
-	(void)sig_num;
-
-	write(1, "\n", 1);
-
-}
-
