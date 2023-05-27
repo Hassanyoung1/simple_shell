@@ -38,7 +38,7 @@ int _print_err_prompt(char *argv_name, char *command_number, char *command);
 
 
 /*void fork_check(int pid);*/
-void fork_check(char **argv, char **envp, pid_t pid);
+void fork_check(char **argv, char *holder, int pid);
 char *_strdup(char *str);
 char *_strcat(char *dest, char *src);
 char *path_get(char *command);
@@ -53,9 +53,9 @@ char *_getenv(char *name);
 extern char **environ;
 
 /*MAIN FUNCTIONS*/
-void token_split(char *path, char *delim, char **argv, int argv_size);
+int token_split(char *path, char *delim, char **argv, int argv_size);
 char **token_split_old(char *path, char *delim);
-void prompt_exect(char **argv, char **envp);
+void prompt_exect(char **argv);
 
 
 #endif

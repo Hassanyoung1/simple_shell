@@ -5,16 +5,14 @@
  *
  * @argc: The argument count
  * @argv: The argument vector
- * @envp: the environment path
  * Return: nothing
  */
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
 	if (argc == 1)
 	{
-		/*signal(SIGINT, handle_sigs);*/
-		prompt_exect(argv, envp);
+		prompt_exect(argv);
 	}
 	perror(": syntax error");
 	exit(EXIT_FAILURE);

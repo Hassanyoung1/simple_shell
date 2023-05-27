@@ -4,52 +4,50 @@
 
 /**
  * prompt_exect - provides a prompt and execute simple shell command
- *
  * @argv: pointer to argument vector
- * @envp: pointer to path environ string
  * Return: nothing
  */
-void prompt_exect(char **argv, char **envp)
+void prompt_exect(char **argv)
 {
 	char *holder, *str = NULL, *token_holder[MAX_TOKENS];
 	size_t n  = 0;
-	int count = 0;
-	pid_t a;
+	int a, count = 0;
 
 	while (true)
 	{
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
 		str = call_getline(str, n, &count);
-
 		if (*str == '\n')
-		{
-			free(str);
+		{	free(str);
 			continue;
 		}
-		token_split(str, " ", token_holder, MAX_TOKENS);
-		if (token_holder[0] == NULL)
-		{free(str);
-			free_token_holder(token_holder);
+		if (token_split(str, " ", token_holder, MAX_TOKENS) == -1)
+		{	free_token_holder(token_holder); /*freed str in func*/
 			continue;
 		}
 		else if (check_builtin(token_holder[0]))
-		{
-			free_token_holder(token_holder);
-			free(str);
+		{free_token_holder(token_holder); /*str freed in getline*/
 			continue;
 		}
 		holder = path_get(token_holder[0]);
 
 		if (holder != NULL)
 		{
-			token_holder[0] = holder;
-			a = fork();
-			fork_check(token_holder, envp, a);
+			if (access(token_holder[0], X_OK) == -1)
+			{	a = fork();
+				fork_check(token_holder, holder, a);
+				free(holder);
+			}
+			else
+			{a = fork();
+				fork_check(token_holder, holder, a);
+			}
+			continue;
 		}
 		else if (token_holder == NULL || holder == NULL)
 			error_handle(argv, token_holder[0], count);
-		free(str);
+			/*continue;*/
 	}
 }
 /**
@@ -57,15 +55,15 @@ void prompt_exect(char **argv, char **envp)
  *
  * @pid: pid of a given fork command
  * @argv: Argument vector
- * @envp: Pointer to environment variable
+ * @holder: holds the full, concatenated path of command to run
  * Return: nothing
  */
 
-void fork_check(char **argv, char **envp, int pid)
+void fork_check(char **argv, char *holder, int pid)
 {
 	if (pid == 0)
 	{
-		execve(argv[0], argv, envp);
+		execve(holder, argv, environ);
 		perror(argv[0]);
 		exit(EXIT_FAILURE);
 	}
@@ -81,6 +79,7 @@ void fork_check(char **argv, char **envp, int pid)
 			exit(EXIT_FAILURE);
 		}
 	}
+	free_token_holder(argv);
 }
 
 /**
@@ -114,7 +113,7 @@ char *call_getline(char *str, size_t n, int *count)
 	}
 
 	check = str_check(str);
-	if (check == 0 && !isatty(STDIN_FILENO))
+	if (str[0] == '\0' && !isatty(STDIN_FILENO))
 	{
 		(*count)++;
 		free(str);
@@ -122,7 +121,6 @@ char *call_getline(char *str, size_t n, int *count)
 	}
 	if (check == 0 && isatty(STDIN_FILENO))
 	{
-		printf("right here..");
 		(*count)++;
 		free(str);
 		return ("\n");
@@ -143,24 +141,23 @@ char *path_get(char *command)
 {
 	char *path_holder[MAX_TOKENS], *holder, *path_copy, *path;
 	char exec_path[100];
-	int check, i = 0;
+	int i = 0;
 
-	check = str_check(command);
-	if (check == 0 || check == 1 || command == NULL)
-		command[0] = '\0';
 	if (access(command, X_OK) == 0)
 		return (command);
-
 	path  = _getenv("PATH");
 	if (path == NULL)
+	{
+		free(path);
 		return (NULL);
+	}
 	path_copy = _strdup(path);
 	if (path_copy == NULL)
 	{
+		free(path);
 		free(path_copy);
 		return (NULL);
 	}
-
 	token_split(path_copy, ":", path_holder, MAX_TOKENS);
 
 	while (path_holder[i] != NULL)
@@ -172,11 +169,15 @@ char *path_get(char *command)
 
 		if (access(exec_path, X_OK) == 0)
 		{
+			free(path);
 			holder = _strdup(exec_path);
+			free_token_holder(path_holder);
 			return (holder);
 		}
 		i++;
 	}
+	free(path);
+	free_token_holder(path_holder);
 	return (NULL);
 }
 
@@ -195,7 +196,10 @@ bool check_builtin(char *str)
 		return (false);
 
 	if (stringcmp(str, "exit") == 0)
+	{
+		free(str);
 		exit(EXIT_SUCCESS);
+	}
 
 	else if (stringcmp(str, "env") == 0)
 	{
