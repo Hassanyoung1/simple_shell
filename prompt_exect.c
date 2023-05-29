@@ -47,7 +47,7 @@ void prompt_exect(char **argv)
 		}
 		else if (token_holder == NULL || holder == NULL)
 			error_handle(argv, token_holder[0], count);
-			/*continue;*/
+		/*continue;*/
 	}
 }
 /**
@@ -139,10 +139,11 @@ char *call_getline(char *str, size_t n, int *count)
  **/
 char *path_get(char *command)
 {
-	char *path_holder[MAX_TOKENS], *holder, *path_copy, *path;
-	char exec_path[100];
+	char *path_holder[MAX_TOKENS], *holder, *path_copy, *path, exec_path[100];
 	int i = 0;
 
+	if (command == NULL)
+		return (NULL);
 	if (access(command, X_OK) == 0)
 		return (command);
 	path  = _getenv("PATH");
@@ -166,7 +167,6 @@ char *path_get(char *command)
 		_strcat(exec_path, "/");
 		_strcat(exec_path, command);
 		_strcat(exec_path, "\0");
-
 		if (access(exec_path, X_OK) == 0)
 		{
 			free(path);

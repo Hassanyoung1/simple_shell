@@ -14,7 +14,8 @@ void error_handle(char **argv, char *command, int count)
 	char command_number[10];
 	int err_len = 0, temp, i, count_len = 0;
 
-	/* Converting count to string */
+	if (command == NULL)
+		return;
 	temp = count;
 	while (temp != 0)
 	{
@@ -34,6 +35,7 @@ void error_handle(char **argv, char *command, int count)
 	{
 		err_len = _print_err_prompt(argv[0], command_number, command);
 		err_len += write(STDERR_FILENO, ": not found\n", 12);
+		free(command);
 		return;
 	}
 
