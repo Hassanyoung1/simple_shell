@@ -47,7 +47,6 @@ void prompt_exect(char **argv)
 		}
 		else if (token_holder == NULL || holder == NULL)
 			error_handle(argv, token_holder[0], count);
-		/*continue;*/
 	}
 }
 /**

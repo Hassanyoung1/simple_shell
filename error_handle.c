@@ -36,6 +36,8 @@ void error_handle(char **argv, char *command, int count)
 		err_len = _print_err_prompt(argv[0], command_number, command);
 		err_len += write(STDERR_FILENO, ": not found\n", 12);
 		free(command);
+		if (!isatty(STDIN_FILENO))
+			exit(127);
 		return;
 	}
 
@@ -46,7 +48,6 @@ void error_handle(char **argv, char *command, int count)
 		return;
 	}
 
-	/* Handle other errors */
 	error_message[err_len] = '\0';
 	perror(error_message);
 }
