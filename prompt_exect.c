@@ -35,13 +35,14 @@ void prompt_exect(char **argv)
 		if (holder != NULL)
 		{
 			if (access(token_holder[0], X_OK) == -1)
-			{	a = fork();
+			{a = fork();
 				fork_check(token_holder, holder, a);
 				free(holder);
 			}
 			else
 			{a = fork();
 				fork_check(token_holder, holder, a);
+				check_builtin("exit2");
 			}
 			continue;
 		}
@@ -107,7 +108,6 @@ char *call_getline(char *str, size_t n, int *count)
 			write(1, "\n", 1);
 			exit(EXIT_SUCCESS);
 		}
-
 		exit(EXIT_SUCCESS);
 	}
 
@@ -198,6 +198,12 @@ bool check_builtin(char *str)
 	{
 		free(str);
 		exit(EXIT_SUCCESS);
+	}
+	else if (stringcmp(str, "exit2") == 0)
+	{
+		if (!isatty(STDIN_FILENO)) /*non dynam. alloc str. passed*/
+			exit(2);
+		return (false);
 	}
 
 	else if (stringcmp(str, "env") == 0)
